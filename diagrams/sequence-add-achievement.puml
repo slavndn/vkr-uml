@@ -1,0 +1,37 @@
+@startuml
+title Внесение достижения (учитель, localStorage) — Sequence Diagram
+autonumber
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+actor "Учитель" as Teacher
+boundary "Web UI" as UI
+control "AuthService\n(локально)" as Auth
+control "AchievementService\n(локально)" as S
+database "Browser Storage\n(localStorage)" as LS
+
+Teacher -> UI : Открыть форму\n«Внести достижение»
+UI -> Auth : Проверить режим/роль\n(учитель)
+Auth --> UI : OK
+UI -> LS : READ справочники/данные\n(классы, ученики, метрики)
+LS --> UI : JSON
+
+Teacher -> UI : Заполнить поля\n(ученик, метрика, значение)\nНажать «Сохранить»
+UI -> Auth : Проверить права доступа
+Auth --> UI : OK
+
+UI -> S : createRecord(payload, teacherId)
+S -> LS : WRITE AchievementRecord\n(status=SUBMITTED)
+LS --> S : recordId
+S --> UI : recordCreated(recordId)\n+ карточка записи
+
+Teacher -> UI : (опционально)\nПодтвердить запись
+UI -> Auth : Проверить права доступа
+Auth --> UI : OK
+UI -> S : approve(recordId)
+S -> LS : UPDATE status=APPROVED
+LS --> S : OK
+S --> UI : OK
+
+@enduml

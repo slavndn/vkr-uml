@@ -1,0 +1,60 @@
+@startuml
+title ВКР: Локальное веб‑приложение учета спортивных достижений — Use Case
+left to right direction
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+actor "Ученик" as Student
+actor "Учитель\nфизической культуры" as Teacher
+
+rectangle "Локальное приложение учета\nспортивных достижений (localStorage)" {
+  usecase "Авторизация" as UC_Login
+  usecase "Просмотр\nличного профиля" as UC_Profile
+  usecase "Просмотр\nдостижений" as UC_ViewAchievements
+  usecase "Просмотр\nстатистики" as UC_Stats
+
+  usecase "Управление классами" as UC_Classes
+  usecase "Управление учениками" as UC_Students
+  usecase "Внесение достижения" as UC_AddAchievement
+  usecase "Подтверждение/отклонение\nдостижения" as UC_Review
+  usecase "Формирование отчетов\n(экспорт)" as UC_Reports
+  usecase "Управление справочниками\n(виды спорта, нормативы)" as UC_Dicts
+  usecase "Импорт/экспорт данных\n(файл JSON)" as UC_ImportExport
+
+  usecase "Проверка прав доступа" as UC_Authz
+}
+
+Student --> UC_Login
+Student --> UC_Profile
+Student --> UC_ViewAchievements
+Student --> UC_Stats
+
+Teacher --> UC_Login
+Teacher --> UC_Classes
+Teacher --> UC_Students
+Teacher --> UC_AddAchievement
+Teacher --> UC_Review
+Teacher --> UC_Reports
+Teacher --> UC_Stats
+Teacher --> UC_Dicts
+Teacher --> UC_ImportExport
+
+UC_Profile .> UC_Authz : <<include>>
+UC_ViewAchievements .> UC_Authz : <<include>>
+UC_Stats .> UC_Authz : <<include>>
+UC_Classes .> UC_Authz : <<include>>
+UC_Students .> UC_Authz : <<include>>
+UC_AddAchievement .> UC_Authz : <<include>>
+UC_Review .> UC_Authz : <<include>>
+UC_Reports .> UC_Authz : <<include>>
+UC_Dicts .> UC_Authz : <<include>>
+UC_ImportExport .> UC_Authz : <<include>>
+
+note right of UC_AddAchievement
+Достижение может быть:
+- результат нормативов на уроке
+- участие/призовое место в соревновании
+end note
+
+@enduml

@@ -1,0 +1,132 @@
+@startuml
+title ВКР: Локальное веб‑приложение учета спортивных достижений — Class Diagram
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+class User {
+  +id: UUID
+  +email: string
+  +fullName: string
+  +role: Role
+  +isActive: boolean
+  +createdAt: DateTime
+}
+
+class StudentProfile {
+  +id: UUID
+  +studentId: UUID
+  +schoolId: UUID
+  +classGroupId: UUID
+  +dateOfBirth: Date
+  +medicalGroup: string
+}
+
+class TeacherProfile {
+  +id: UUID
+  +teacherId: UUID
+  +schoolId: UUID
+  +position: string
+}
+
+class School {
+  +id: UUID
+  +name: string
+  +address: string
+}
+
+class ClassGroup {
+  +id: UUID
+  +schoolId: UUID
+  +name: string  'например, "7А"
+  +year: int
+}
+
+class Sport {
+  +id: UUID
+  +name: string
+}
+
+class Metric {
+  +id: UUID
+  +name: string  'например, "Бег 30м"
+  +unit: string  'сек, м, раз и т.п.
+  +betterDirection: string 'lower|higher
+}
+
+class Normative {
+  +id: UUID
+  +metricId: UUID
+  +ageFrom: int
+  +ageTo: int
+  +gender: string
+  +targetValue: number
+}
+
+class Lesson {
+  +id: UUID
+  +teacherId: UUID
+  +classGroupId: UUID
+  +date: Date
+  +topic: string
+}
+
+enum RecordStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+class AchievementRecord {
+  +id: UUID
+  +studentId: UUID
+  +createdByTeacherId: UUID
+  +lessonId: UUID?
+  +sportId: UUID?
+  +metricId: UUID
+  +value: number
+  +status: RecordStatus
+  +recordedAt: DateTime
+  +comment: string?
+}
+
+User "1" -- "0..1" StudentProfile
+User "1" -- "0..1" TeacherProfile
+
+School "1" -- "0..*" ClassGroup
+School "1" -- "0..*" User
+
+ClassGroup "1" -- "0..*" StudentProfile
+TeacherProfile "1" -- "0..*" Lesson
+ClassGroup "1" -- "0..*" Lesson
+
+Sport "1" -- "0..*" Metric
+Metric "1" -- "0..*" Normative
+
+StudentProfile "1" -- "0..*" AchievementRecord
+TeacherProfile "1" -- "0..*" AchievementRecord : creates >
+Lesson "0..1" -- "0..*" AchievementRecord
+Metric "1" -- "0..*" AchievementRecord
+Sport "0..1" -- "0..*" AchievementRecord
+
+note right of AchievementRecord
+Основная бизнес‑сущность:
+фиксирует результат ученика
+по метрике (например, бег 30м).
+end note
+
+note bottom
+Хранение данных: локально (browser localStorage),
+без серверной базы данных.
+end note
+
+@enduml

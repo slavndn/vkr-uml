@@ -1,0 +1,50 @@
+@startuml
+title Процесс фиксации результата ученика — Activity Diagram
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activity {
+  BackgroundColor #F8FAFC
+  BorderColor #0F172A
+  FontColor #0F172A
+  ArrowColor #334155
+}
+
+start
+
+partition "Учитель" {
+  :Авторизоваться;
+  :Выбрать класс и ученика;
+  :Выбрать метрику/норматив\nили соревнование;
+  :Ввести значение результата;
+}
+
+partition "Система" {
+  :Проверить права доступа;
+  if (Данные валидны?) then (да)
+    :Сохранить запись\nAchievementRecord (SUBMITTED);
+  else (нет)
+    :Показать ошибки ввода;
+    stop
+  endif
+}
+
+partition "Учитель" {
+  if (Нужно подтверждение?) then (да)
+    :Подтвердить/отклонить запись;
+  else (нет)
+    :Оставить на рассмотрение;
+  endif
+}
+
+partition "Система" {
+  if (Подтверждено?) then (да)
+    :Изменить статус на APPROVED;
+  else (нет)
+    :Изменить статус на REJECTED\nили вернуть в DRAFT;
+  endif
+  :Обновить статистику/отчеты;
+}
+
+stop
+@enduml

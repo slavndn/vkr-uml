@@ -1,0 +1,21 @@
+@startuml
+title Жизненный цикл записи достижения — State Diagram
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+[*] --> Draft : создать как черновик
+
+Draft --> Submitted : отправить на фиксацию
+Draft --> [*] : удалить
+
+Submitted --> Approved : подтвердить учителем
+Submitted --> Rejected : отклонить\n(ошибка/нет подтверждения)
+Submitted --> Draft : вернуть на доработку
+
+Rejected --> Draft : исправить и повторить
+Approved --> Archived : завершение периода\n(год/четверть)\nили архивирование
+
+Archived --> [*]
+
+@enduml
